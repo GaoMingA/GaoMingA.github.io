@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Gaoming Blog</title>
+    <description>这里是Gaoming的个人博客，Android技术探究的原创世界</description>
+    <link>http://localhost:4000/</link>
+    <atom:link href="http://localhost:4000/feed.xml" rel="self" type="application/rss+xml" />
+    <pubDate>Fri, 10 Mar 2017 10:24:41 +0800</pubDate>
+    <lastBuildDate>Fri, 10 Mar 2017 10:24:41 +0800</lastBuildDate>
+    <generator>Jekyll v3.4.1</generator>
+    
+      <item>
+        <title>gaoming blog</title>
+        <description>&lt;h4 id=&quot;first-doc-test&quot;&gt;First doc test&lt;/h4&gt;
+
+&lt;p&gt;  …。&lt;/p&gt;
+
+&lt;h4 id=&quot;test-content&quot;&gt;test content&lt;/h4&gt;
+
+&lt;p&gt;  ….&lt;/p&gt;
+</description>
+        <pubDate>Thu, 09 Feb 2017 00:00:00 +0800</pubDate>
+        <link>http://localhost:4000/2017/02/09/about-myblog/</link>
+        <guid isPermaLink="true">http://localhost:4000/2017/02/09/about-myblog/</guid>
+        
+        <category>test</category>
+        
+        
+      </item>
+    
+  </channel>
+</rss>
