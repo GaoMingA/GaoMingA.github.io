@@ -71,7 +71,7 @@ ga_domain: Gaoming.github.io/blog
 
 # Sidebar settings
 sidebar: true                           # whether or not using Sidebar.
-sidebar-about-description: "，<br>，<br>，<br>。"
+sidebar-about-description: "看似寻常最崎岖，<br>成如容易却艰辛。<br>，<br>"
 sidebar-avatar: img/website/avatar-gaoming.jpg      # use absolute URL, seeing it's used in both `/` and `/about/`
 
 
