@@ -8,7 +8,9 @@ author:     "gaoming"
 header-img: "/img/website/home-bg.jpg"
 catalog: true
 tags:
-    - Android keyevent 按键 
+    - Android 
+    - keyevent 
+    - 按键 
 ---
 
 # Android 按键拦截处理
