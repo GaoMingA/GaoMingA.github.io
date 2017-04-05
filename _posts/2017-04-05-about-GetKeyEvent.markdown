@@ -129,7 +129,8 @@ private View.OnClickListener mRecentsClickListener = new View.OnClickListener() 
     };
 ```
 
-==这里为什么Recent app键无法在```interceptKeyBeforeQueueing(KeyEvent event, int policyFlags)```方法中监听的到呢？我们在后面Recent_app处理流程详细说明==
+> 思考：这里为什么Recent app键无法在```interceptKeyBeforeQueueing(KeyEvent event, int policyFlags)```方法中监听的到呢？我们在后面Recent_app处理流程详细说明
+>
 
 ## 问题处理思路回顾
 
@@ -160,7 +161,6 @@ private View.OnClickListener mRecentsClickListener = new View.OnClickListener() 
 首先对比一下home.xml和recent_apps.xml，这两个文件分别是Home键和Recent_app键绘制的xml文件
 
 ```/frameworks/base/packages/SystemUI/res/layout```
-
 home.xml
 
 ```xml
@@ -198,7 +198,7 @@ recent_app.xml
     />
 ```
 
-有一个很明显的区别  ==systemui:keyCode="3"== keyCode=3是Home键在KeyEvent.java定义的系统value值，Recent_app是没有这个属性的。
+有一个很明显的区别  systemui:keyCode="3" ， keyCode=3是Home键在KeyEvent.java定义的系统value值，Recent_app是没有这个属性的。
 
 > 注： 以上代码是Android N的实现代码，在之前的系统代码中 是在navigation_bar.xml里面定义的
 
