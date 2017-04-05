@@ -160,7 +160,6 @@ private View.OnClickListener mRecentsClickListener = new View.OnClickListener() 
 
 首先对比一下home.xml和recent_apps.xml，这两个文件分别是Home键和Recent_app键绘制的xml文件
 
-```/frameworks/base/packages/SystemUI/res/layout```
 home.xml
 
 ```xml
