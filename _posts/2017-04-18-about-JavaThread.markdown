@@ -1,7 +1,7 @@
 ---
 layout:     post
 title:      "Java并发编程 (一)"
-subtitle:   " "
+subtitle:   "总纲 线程的创建和启动"
 navcolor:   "invert"
 date:       2017-04-18
 author:     "gaoming"
