@@ -68,17 +68,23 @@ tags:
 
   了解了线程生命周期各个状态概念后，再来看看各个状态之间是怎么样一个切换过程呢，其实最关键的就是阻塞状态和运行状态之间的转换。
 
-![线程生命周期转换图](https://github.com/GaoMingA/blogger/blob/master/img/website/java/java_thread_lifecycle.png?raw=true)
+![线程生命周期转换图](https://github.com/GaoMingA/blogger/blob/master/img/website/android/java_thread_lifecycle.png?raw=true)
 
 > 注：线程死亡后就不能再尝试启动线程了，可以通过isAlive()方法判断线程状态，当线程处于新建和死亡状态时返回false，如果尝试启动已经死亡的线程，程序会抛出IllegalThreadStateException异常。
 
 # 线程控制
 
-  前面线程生命周期里面在线程状态转换时用到了很多方法，比如sleep() wait()等等，这些方法可以控制线程的执行状态的切换，所以我们这一节主要看看线程控制的这些方法。
+  前面线程生命周期里面在线程状态转换时用到了很多方法，比如sleep() wait()等等，这些方法可以控制线程的执行状态的切换，所以我们这一节主要看看线程控制的这些方法，可以自己写demon调用这些方法，查看执行结果对比下表中的功能说明列来加深这些控制方法的理解。
 
+| 线程控制方法        | 功能                                       |
+| :------------ | :--------------------------------------- |
+| join()        | 在Thread1里面执行Thread2.join(),那么Thread1进入Waiting状态，要等Thread2执行完后才能继续执行 |
+| sleep()       | Thread1.sleep(long millis) 执行线程Thread1进入Waiting状态，等待millis毫秒后再执行 |
+| yield()       | 从上面的状态转换图可以看到，运行状态的线程调用了yield()方法后，直接进入了就绪状态，也就是说，调用了这个方法后，线程让步一次，然后由操作系统再分配资源，有可能其他线程先运行也有可能该线程继续获得运行权 |
+| setPriority() | Thread.setPriority(int newPriority)设置线程的优先级，优先级由1-10依次增高，Thread提供了三个静态常量可以使用： public static final int MIN_PRIORITY = 1; public static final int NORM_PRIORITY = 5; public static final int MAX_PRIORITY = 10;  getPriority()可以获取线程的优先级 |
+| Daemon        | 守护线程，Thread.setDaemon(true)，程序没有其他线程只有守护线程，守护线程是无法存活的，不管它有没有执行结束 |
 
+# 总结
 
-
-
-
+  了解线程的生命周期，有助于编码时更好的控制线程，简单介绍几种常用的线程控制方法，细心的可能发现，让线程进入阻塞的wait()方法没有列在表格中，wait()方法其实是配合notify()方法来控制不同的线程进行交互的，所以将在线程通信一节来说明。
 
