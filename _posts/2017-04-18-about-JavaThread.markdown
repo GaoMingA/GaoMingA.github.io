@@ -16,7 +16,7 @@ tags:
 
   首先，如下图，列出个大纲，我们将所有的知识点，通过思维导图引导出来，然后根据每个知识点详细展开，以后碰到并发中的新问题或知识点，都可添加到大纲，不断完善文档。
 
-![线程知识点大纲](https://github.com/GaoMingA/blogger/blob/master/img/website/java/ThreadOutline.png?raw=true)
+![线程知识点大纲](https://github.com/GaoMingA/blogger/blob/master/img/java/ThreadOutline.png?raw=true)
 
 # 一、线程的创建和启动
 

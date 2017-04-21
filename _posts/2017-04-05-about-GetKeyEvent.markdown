@@ -145,7 +145,7 @@ private View.OnClickListener mRecentsClickListener = new View.OnClickListener() 
 
  	 按键处理设计的整体思路是驱动层会有一个消息队列来存放事件，会有一个Reader来不停的读取事件，一个Dispatcher来分发消息队列中的事件。Dispatcher分发的事件最后会通过jni上报到InputManagerService，然后通过接口最后传递给PhoneWindowManager，这里再根据不同的按键事件类型来做不同的处理。上层能做的修改基本上都是从PhoneWindowManager中开始的。
 
-![按键处理类图](https://github.com/GaoMingA/blogger/blob/master/img/website/android/keyevent_class_chart.png?raw=true)
+![按键处理类图](https://github.com/GaoMingA/blogger/blob/master/img/android/keyevent_class_chart.png?raw=true)
 
 上图引用自： [Android电源管理之关机流程](http://chendongqi.me/2017/02/21/pm_shutdown_flow/)
 

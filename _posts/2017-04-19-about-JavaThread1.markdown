@@ -68,7 +68,7 @@ tags:
 
   了解了线程生命周期各个状态概念后，再来看看各个状态之间是怎么样一个切换过程呢，其实最关键的就是阻塞状态和运行状态之间的转换。
 
-![线程生命周期转换图](https://github.com/GaoMingA/blogger/blob/master/img/website/android/java_thread_lifecycle.png?raw=true)
+![线程生命周期转换图](https://github.com/GaoMingA/blogger/blob/master/img/android/java_thread_lifecycle.png?raw=true)
 
 > 注：线程死亡后就不能再尝试启动线程了，可以通过isAlive()方法判断线程状态，当线程处于新建和死亡状态时返回false，如果尝试启动已经死亡的线程，程序会抛出IllegalThreadStateException异常。
 
