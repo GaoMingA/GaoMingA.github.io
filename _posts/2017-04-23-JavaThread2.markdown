@@ -1,9 +1,9 @@
 ---
 layout:     post
-title:      "Java并发编程 (三)"
+title:      "Java并发编程 (三) - 线程安全 线程同步"
 subtitle:   "线程安全 线程同步"
 navcolor:   "invert"
-date:       2017-04-19
+date:       2017-04-23
 author:     "gaoming"
 header-img: "/img/website/home-bg.jpg"
 catalog: true

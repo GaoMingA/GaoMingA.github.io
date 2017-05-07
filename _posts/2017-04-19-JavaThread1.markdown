@@ -1,6 +1,6 @@
 ---
 layout:     post
-title:      "Java并发编程 (二)"
+title:      "Java并发编程 (二) - 线程的生命周期和线程控制"
 subtitle:   "线程的生命周期和线程控制"
 navcolor:   "invert"
 date:       2017-04-19
