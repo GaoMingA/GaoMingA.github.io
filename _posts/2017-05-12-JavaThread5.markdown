@@ -105,7 +105,8 @@ public class ThreadPoolTest {
 
 执行结果：
 
-```pool-1-thread-1 i的值为:0
+```
+pool-1-thread-1 i的值为:0
 pool-1-thread-2 i的值为:0
 pool-1-thread-1 i的值为:1
 pool-1-thread-1 i的值为:2
