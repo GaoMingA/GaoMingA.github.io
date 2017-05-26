@@ -105,7 +105,7 @@ public class ThreadPoolTest {
 
 执行结果：
 
-```
+```java
 pool-1-thread-1 i的值为:0
 pool-1-thread-2 i的值为:0
 pool-1-thread-1 i的值为:1
@@ -113,8 +113,7 @@ pool-1-thread-1 i的值为:2
 pool-1-thread-2 i的值为:1
 pool-1-thread-2 i的值为:2
 ```
-
-上面的例子创建了一个固定线程数为3的线程池，将两个并发打印任务通过submit提交给线程池，从执行结果来看，pool-1中分别维护了thread-2和thread-1两个线程，并执行了其打印任务，线程池最后通过`shutdown()`进行关闭。
+&emsp;&emsp;上面的例子创建了一个固定线程数为3的线程池，将两个并发打印任务通过submit提交给线程池，从执行结果来看，pool-1中分别维护了thread-2和thread-1两个线程，并执行了其打印任务，线程池最后通过`shutdown()`进行关闭。
 
 ### 向线程池提交并发任务
 
