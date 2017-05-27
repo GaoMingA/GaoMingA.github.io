@@ -131,7 +131,7 @@ pool-1-thread-2 i的值为:2
 
 ### 关闭线程池
 
-当不再使用线程池的时候应该关闭线程池，如果不关闭的话，即使没有线程执行，线程池依然会在JVM中保持Running。关闭线程池的方法如下：
+不再使用线程池的时候应该关闭线程池，如果不关闭的话，即使没有线程执行，线程池依然会在JVM中保持Running。关闭线程池的方法如下：
 
 - `shutdown()`  不会立即关闭线程池，线程池不再接受新的线程任务，会等线程池中的线程都执行结束后关闭线程池。
 
@@ -140,6 +140,203 @@ pool-1-thread-2 i的值为:2
 只要调用了这两个关闭方法的其中一个，isShutdown方法就会返回true。当所有的任务都已关闭后,才表示线程池关闭成功，这时调用isTerminaed方法会返回true。至于我们应该调用哪一种方法来关闭线程池，应该由提交到线程池的任务特性决定，通常调用shutdown来关闭线程池，如果任务不一定要执行完，则可以调用shutdownNow。
 
 ## ForkJoinPool
+
+  上面介绍了ExecutorService和ScheduleExecutorService，Java 7 还提供了另一个创建线程池的类[**Java Fork and Join using ForkJoinPool**](http://tutorials.jenkov.com/java-util-concurrent/java-fork-and-join-forkjoinpool.html)，ForkJoinPool是抽象类AbstractExecutorService（实现ExecutorService接口）的子类。从字面意思来看，分别是Fork和Join，也就是任务分解和合并，所以该线程池的功能是，可以将一个大型任务分解成多个小任务，然后将小任务合并起来完成整个任务。
+
+  ForkJoinPool的**创建方式**是直接new一个新的对象，通过其构造方法来创建`ForkJoinPool(int parallelism)`。
+
+```java
+ForkJoinPool forkJoinPool = new ForkJoinPool(4);
+```
+
+上面这个例子创建了一个parallelism为4的 `ForkJoinPool` 对象，4代表你希望同一时刻有4个线程或CPU执行任务。
+
+  **提交任务**的方法和ExecutorService类似，可以用submit()，invoke()，但是参数则不是Runnable对象或Callable对象了，而是`RecursiveAction`（无返回值任务）和`RecursiveTask`（有返回值任务）的对象。
+
+  下面我们分别针对`RecursiveAction`和`RecursiveTask`实现任务分解合并的ForkJoinPool线程池。
+
+### RecursiveAction
+
+  该类是ForkJoinTask<V>的子类 ForkJoinTask实现了 Future<V>接口，没有返回值。现在举个列子，需要执行一个打印任务，我们将打印任务分解成多个打印任务执行，最终打印出所有的值即可。
+
+实现一个RecursiveAction的子类PrintTask：
+
+```java
+package com.example;
+
+import java.util.concurrent.RecursiveAction;
+
+/**
+ * Created by gaoming on 2017/4/17.
+ */
+
+class PrintTask extends RecursiveAction{
+
+    private static final int THRESHOLD = 5;
+    private int start;
+    private int end;
+
+    public PrintTask (int start , int end){
+        this.start = start;
+        this.end = end;
+    }
+
+    @Override
+    protected void compute() {
+        if (end - start < THRESHOLD){
+            for (int i  = start; i < end; i++){
+                System.out.println(Thread.currentThread().getName() +
+                "的i值：" + i);
+            }
+        }else {
+            int middle = (end + start)/2;
+            PrintTask left = new PrintTask(start , middle);
+            PrintTask right = new PrintTask(middle , end);
+            left.fork();
+            right.fork();
+        }
+    }
+}
+```
+
+覆盖`compute()`完成打印任务，当任务量小与5，直接打印，任务量大于5时，将任务拆分成两个子任务left和right，通过`.fork()`方法将子任务交给`ForkJoinTask`添加到workQueue队列处理。
+
+然后我们创建一个ForkJoinPool线程池，将PrintTask交给该线程池处理：
+
+```java
+package com.example;
+
+import java.util.concurrent.ForkJoinPool;
+import java.util.concurrent.TimeUnit;
+
+public class ForkJoinPoolTest {
+    public static void main(String [] args)
+            throws InterruptedException {
+        //创建ForkJoinPool对象，同时两个线程在线程池中执行任务
+        ForkJoinPool pool = new ForkJoinPool(2);
+        //大于5的打印任务
+        PrintTask printTask = new PrintTask(0 , 10);
+        //提交任务给线程池
+        pool.submit(printTask);
+        //配合关闭线程池
+        pool.awaitTermination(2, TimeUnit.SECONDS);
+        pool.shutdown();
+    }
+}
+```
+
+打印结果：
+
+```
+ForkJoinPool-1-worker-0的i值：2
+ForkJoinPool-1-worker-1的i值：7
+ForkJoinPool-1-worker-0的i值：3
+ForkJoinPool-1-worker-0的i值：4
+ForkJoinPool-1-worker-1的i值：8
+ForkJoinPool-1-worker-0的i值：0
+ForkJoinPool-1-worker-0的i值：1
+ForkJoinPool-1-worker-1的i值：9
+ForkJoinPool-1-worker-0的i值：5
+ForkJoinPool-1-worker-0的i值：6
+```
+
+可以看到在ForkJoinPool-1维护的线程池中有两个工作线程worker-0和worker-1在执行打印任务，完成整改打印任务，这就是无返回值的任务分解。
+
+### RecursiveTask
+
+  RecursiveTask同RecursiveAction，只是任务是有返回值的。下面例子是个求和运算，需要返回运行结果：
+
+实现RecursiveTask的子类CalTask：
+
+```java
+package com.example;
+
+import java.util.concurrent.RecursiveTask;
+
+/**
+ * Created by gaoming on 2017/4/17.
+ */
+
+public class CalTask extends RecursiveTask {
+
+    private static final int THRESHOLD = 20;
+    private int start;
+    private int end;
+    private int arr[];
+
+    public CalTask(int[] arr, int start, int end) {
+        this.arr = arr;
+        this.start = start;
+        this.end = end;
+    }
+
+    @Override
+    protected Object compute() {
+        int sum = 0;
+        if (end - start < THRESHOLD){
+            for (int i = start;i < end; i++ ){
+                sum += arr[i];
+            }
+            return sum;
+        }else {
+            int middle = (start + end) / 2;
+            CalTask left = new CalTask(arr,start,middle);
+            CalTask right = new CalTask(arr,middle,end);
+            //分解任务
+            left.fork();
+            right.fork();
+            //合并任务并返回结果
+            return (int)left.join() + (int)right.join();
+        }
+    }
+}
+```
+
+创建线程池：
+
+```java
+package com.example;
+
+import java.util.Random;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ForkJoinPool;
+import java.util.concurrent.Future;
+
+public class Sum {
+    public static void main(String[] args)
+            throws ExecutionException, InterruptedException {
+
+        int[] arr = new int[100];
+        Random random = new Random();
+        //该变量存储未分解任务的求和结果
+        int total = 0;
+
+        for (int i = 0, len = arr.length; i < len; i++){
+            int tmp = random.nextInt(20);
+            total += (arr[i] = tmp);
+        }
+        System.out.println("未分解任务计算结果："  + total);
+        //创建线程池
+        ForkJoinPool pool = new ForkJoinPool(2);
+        //创建可分解的任务对象
+        CalTask calTask = new CalTask(arr,0,arr.length);
+        //将任务提交线程池，返回结果赋值给Future对象
+        Future<Integer> future = pool.submit(calTask);
+        //打印结果
+        System.out.println("分解任务计算结果："  + future.get());
+        pool.shutdown();
+    }
+}
+```
+
+执行结果是随机的：
+
+```
+未分解任务计算结果：1057
+分解任务计算结果：1057
+```
+
+从执行结果看，分解后的任务返回结果和未分解的任务是一样的，说明执行正确，但分解任务是通过两个线程完成的，所以执行效率肯定更高。
 
 
 
