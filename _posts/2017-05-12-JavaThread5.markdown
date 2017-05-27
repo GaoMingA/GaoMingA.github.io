@@ -1,7 +1,7 @@
 ---
 layout:     post
-title:      "Java并发编程 (六) - 线程池1"
-subtitle:   "线程池 ExecutorService ScheduledExecutorService"
+title:      "Java并发编程 (六) - 线程池"
+subtitle:   "线程池 ExecutorService ScheduledExecutorService ForkJoinPool"
 navcolor:   "invert"
 date:       2017-05-12
 author:     "gaoming"
