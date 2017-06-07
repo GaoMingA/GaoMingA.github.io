@@ -17,15 +17,154 @@ tags:
 
 # 分析ANR需要的LOG
 
-&emsp;&emsp;既然ANR发生了，那么我们就要检测是什么原因触发了ANR，需要的log日志如下：
+&emsp;&emsp;既然ANR发生了，那么我们就要检测是什么原因触发了ANR，需要的log日志如下(示例来自[官网](https://source.android.com/source/read-bug-reports#anrs-deadlocks))：
 
-event log:
+**event log:**
 
+```
+grep "am_anr" bugreport-2015-10-01-18-13-48.txt
+```
 
+grep "am_anr" 从event log中查找哪个进程发生了ANR，可以看到发生ANR时的时间点、pid、组件包名。
 
-logcat 日志
+```verilog
+10-01 18:12:49.599  4600  4614 I am_anr  : [0,29761,com.google.android.youtube,953695941,executing service com.google.android.youtube/com.google.android.apps.youtube.app.offline.transfer.OfflineTransferService]
+10-01 18:14:10.211  4600  4614 I am_anr  : [0,30363,com.google.android.apps.plus,953728580,executing service com.google.android.apps.plus/com.google.android.apps.photos.service.PhotosService]
+```
 
+如上例子，第一条ANR信息中，发生anr的时间是 10-01 18:12:49 、pid是29761、进程为com.google.android.youtube。第二条ANR信息中，发生anr的时间是10-01 18:14:10.211、pid是30363、进程为com.google.android.apps.plus
 
+**logcat 日志**
 
-/data/anr/tarces.txt
+ logcat 日志中包含关于发生 ANR 时是什么在占用 CPU 以及发生anr的Reason等更多信息。
+
+在日志中  grep "ANR in"
+
+```
+grep "ANR in" bugreport-2015-10-01-18-13-48.txt
+```
+
+```verilog
+10-01 18:13:11.984  4600  4614 E ActivityManager: ANR in com.google.android.youtube
+10-01 18:14:31.720  4600  4614 E ActivityManager: ANR in com.google.android.apps.plus
+10-01 18:14:31.720  4600  4614 E ActivityManager: PID: 30363
+10-01 18:14:31.720  4600  4614 E ActivityManager: Reason: executing service com.google.android.apps.plus/com.google.android.apps.photos.service.PhotosService
+10-01 18:14:31.720  4600  4614 E ActivityManager: Load: 35.27 / 23.9 / 16.18
+10-01 18:14:31.720  4600  4614 E ActivityManager: CPU usage from 16ms to 21868ms later:
+10-01 18:14:31.720  4600  4614 E ActivityManager:   74% 3361/mm-qcamera-daemon: 62% user + 12% kernel / faults: 15276 minor 10 major
+10-01 18:14:31.720  4600  4614 E ActivityManager:   41% 4600/system_server: 18% user + 23% kernel / faults: 18597 minor 309 major
+10-01 18:14:31.720  4600  4614 E ActivityManager:   32% 27420/com.google.android.GoogleCamera: 24% user + 7.8% kernel / faults: 48374 minor 338 major
+10-01 18:14:31.720  4600  4614 E ActivityManager:   16% 130/kswapd0: 0% user + 16% kernel
+10-01 18:14:31.720  4600  4614 E ActivityManager:   15% 283/mmcqd/0: 0% user + 15% kernel
+...
+10-01 18:14:31.720  4600  4614 E ActivityManager:   0.1% 27248/irq/503-synapti: 0%
+10-01 18:14:31.721  4600  4614 I ActivityManager: Killing 30363:com.google.android.apps.plus/u0a206 (adj 0): bg anr
+```
+
+> 注：当ANR不是发生在system server进程时，mian log会有关键字"ANR in”，如果anr发生在 system server进程，则main log一般不会记录到关键字"ANR in”
+>
+> 可以通过main log关注anr发生到结束前一段时间（2s）的系统运行情况。
+
+**/data/anr/tarces.txt**
+
+trace文件用于查看anr发生时主线程的堆栈信息。trace文件中会有很多堆栈信息，需要确保找到正确的信息，就是通过event log中发生anr的时间点和pid信息来确认。
+
+```verilog
+------ VM TRACES AT LAST ANR (/data/anr/traces.txt: 2015-10-01 18:14:41) ------
+
+----- pid 30363 at 2015-10-01 18:14:11 -----
+Cmd line: com.google.android.apps.plus
+Build fingerprint: 'google/angler/angler:6.0/MDA89D/2294819:userdebug/dev-keys'
+ABI: 'arm'
+Build type: optimized
+Zygote loaded classes=3978 post zygote classes=27
+Intern table: 45068 strong; 21 weak
+JNI: CheckJNI is off; globals=283 (plus 360 weak)
+Libraries: /system/lib/libandroid.so /system/lib/libcompiler_rt.so /system/lib/libjavacrypto.so /system/lib/libjnigraphics.so /system/lib/libmedia_jni.so /system/lib/libwebviewchromium_loader.so libjavacore.so (7)
+Heap: 29% free, 21MB/30MB; 32251 objects
+Dumping cumulative Gc timings
+Total number of allocations 32251
+Total bytes allocated 21MB
+Total bytes freed 0B
+Free memory 9MB
+Free memory until GC 9MB
+Free memory until OOME 490MB
+Total memory 30MB
+Max memory 512MB
+Zygote space size 1260KB
+Total mutator paused time: 0
+Total time waiting for GC to complete: 0
+Total GC count: 0
+Total GC time: 0
+Total blocking GC count: 0
+Total blocking GC time: 0
+
+suspend all histogram:  Sum: 119.728ms 99% C.I. 0.010ms-107.765ms Avg: 5.442ms Max: 119.562ms
+DALVIK THREADS (12):
+"Signal Catcher" daemon prio=5 tid=2 Runnable
+  | group="system" sCount=0 dsCount=0 obj=0x12c400a0 self=0xef460000
+  | sysTid=30368 nice=0 cgrp=default sched=0/0 handle=0xf4a69930
+  | state=R schedstat=( 9021773 5500523 26 ) utm=0 stm=0 core=1 HZ=100
+  | stack=0xf496d000-0xf496f000 stackSize=1014KB
+  | held mutexes= "mutator lock"(shared held)
+  native: #00 pc 0035a217  /system/lib/libart.so (art::DumpNativeStack(std::__1::basic_ostream<char, std::__1::char_traits<char> >&, int, char const*, art::ArtMethod*, void*)+126)
+  native: #01 pc 0033b03b  /system/lib/libart.so (art::Thread::Dump(std::__1::basic_ostream<char, std::__1::char_traits<char> >&) const+138)
+  native: #02 pc 00344701  /system/lib/libart.so (art::DumpCheckpoint::Run(art::Thread*)+424)
+  native: #03 pc 00345265  /system/lib/libart.so (art::ThreadList::RunCheckpoint(art::Closure*)+200)
+  native: #04 pc 00345769  /system/lib/libart.so (art::ThreadList::Dump(std::__1::basic_ostream<char, std::__1::char_traits<char> >&)+124)
+  native: #05 pc 00345e51  /system/lib/libart.so (art::ThreadList::DumpForSigQuit(std::__1::basic_ostream<char, std::__1::char_traits<char> >&)+312)
+  native: #06 pc 0031f829  /system/lib/libart.so (art::Runtime::DumpForSigQuit(std::__1::basic_ostream<char, std::__1::char_traits<char> >&)+68)
+  native: #07 pc 00326831  /system/lib/libart.so (art::SignalCatcher::HandleSigQuit()+896)
+  native: #08 pc 003270a1  /system/lib/libart.so (art::SignalCatcher::Run(void*)+324)
+  native: #09 pc 0003f813  /system/lib/libc.so (__pthread_start(void*)+30)
+  native: #10 pc 00019f75  /system/lib/libc.so (__start_thread+6)
+  (no managed stack frames)
+
+"main" prio=5 tid=1 Suspended
+  | group="main" sCount=1 dsCount=0 obj=0x747552a0 self=0xf5376500
+  | sysTid=30363 nice=0 cgrp=default sched=0/0 handle=0xf74feb34
+  | state=S schedstat=( 331107086 164153349 851 ) utm=6 stm=27 core=3 HZ=100
+  | stack=0xff00f000-0xff011000 stackSize=8MB
+  | held mutexes=
+  kernel: __switch_to+0x7c/0x88
+  kernel: futex_wait_queue_me+0xd4/0x130
+  kernel: futex_wait+0xf0/0x1f4
+  kernel: do_futex+0xcc/0x8f4
+  kernel: compat_SyS_futex+0xd0/0x14c
+  kernel: cpu_switch_to+0x48/0x4c
+  native: #00 pc 000175e8  /system/lib/libc.so (syscall+28)
+  native: #01 pc 000f5ced  /system/lib/libart.so (art::ConditionVariable::Wait(art::Thread*)+80)
+  native: #02 pc 00335353  /system/lib/libart.so (art::Thread::FullSuspendCheck()+838)
+  native: #03 pc 0011d3a7  /system/lib/libart.so (art::ClassLinker::LoadClassMembers(art::Thread*, art::DexFile const&, unsigned char const*, art::Handle<art::mirror::Class>, art::OatFile::OatClass const*)+746)
+  native: #04 pc 0011d81d  /system/lib/libart.so (art::ClassLinker::LoadClass(art::Thread*, art::DexFile const&, art::DexFile::ClassDef const&, art::Handle<art::mirror::Class>)+88)
+  native: #05 pc 00132059  /system/lib/libart.so (art::ClassLinker::DefineClass(art::Thread*, char const*, unsigned int, art::Handle<art::mirror::ClassLoader>, art::DexFile const&, art::DexFile::ClassDef const&)+320)
+  native: #06 pc 001326c1  /system/lib/libart.so (art::ClassLinker::FindClassInPathClassLoader(art::ScopedObjectAccessAlreadyRunnable&, art::Thread*, char const*, unsigned int, art::Handle<art::mirror::ClassLoader>, art::mirror::Class**)+688)
+  native: #07 pc 002cb1a1  /system/lib/libart.so (art::VMClassLoader_findLoadedClass(_JNIEnv*, _jclass*, _jobject*, _jstring*)+264)
+  native: #08 pc 002847fd  /data/dalvik-cache/arm/system@framework@boot.oat (Java_java_lang_VMClassLoader_findLoadedClass__Ljava_lang_ClassLoader_2Ljava_lang_String_2+112)
+  at java.lang.VMClassLoader.findLoadedClass!(Native method)
+  at java.lang.ClassLoader.findLoadedClass(ClassLoader.java:362)
+  at java.lang.ClassLoader.loadClass(ClassLoader.java:499)
+  at java.lang.ClassLoader.loadClass(ClassLoader.java:469)
+  at android.app.ActivityThread.installProvider(ActivityThread.java:5141)
+  at android.app.ActivityThread.installContentProviders(ActivityThread.java:4748)
+  at android.app.ActivityThread.handleBindApplication(ActivityThread.java:4688)
+  at android.app.ActivityThread.-wrap1(ActivityThread.java:-1)
+  at android.app.ActivityThread$H.handleMessage(ActivityThread.java:1405)
+  at android.os.Handler.dispatchMessage(Handler.java:102)
+  at android.os.Looper.loop(Looper.java:148)
+  at android.app.ActivityThread.main(ActivityThread.java:5417)
+  at java.lang.reflect.Method.invoke!(Native method)
+  at com.android.internal.os.ZygoteInit$MethodAndArgsCaller.run(ZygoteInit.java:726)
+  at com.android.internal.os.ZygoteInit.main(ZygoteInit.java:616)
+
+  ...
+  Stacks for other threads in this process follow
+  ...
+```
+
+根据pid 30363 at 2015-10-01 18:14:11来确定这条信息。
+
+> 在MTK平台，日志会被打包成db文件，利用gat工具打开，对应的文件分别为event-SYS_ANDROID_EVENT_LOG、main log-SYS_ANDROID_LOG、traces-SWT_JBT_TRACES
+
+# traces分析
 
