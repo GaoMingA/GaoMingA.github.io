@@ -164,7 +164,25 @@ DALVIK THREADS (12):
 
 根据pid 30363 at 2015-10-01 18:14:11来确定这条信息。
 
-> 在MTK平台，日志会被打包成db文件，利用gat工具打开，对应的文件分别为event-SYS_ANDROID_EVENT_LOG、main log-SYS_ANDROID_LOG、traces-SWT_JBT_TRACES
+> 在MTK平台，日志会被打包成db文件，利用gat工具打开，对应的文件分别为event-SYS_ANDROID_EVENT_LOG、main log-SYS_ANDROID_LOG、traces-SWT_JBT_TRACES.
+>
+> 系统DB位置/data/system/dropbox 包含CPU使用情况和traces文件信息等
 
-# traces分析
+# 问题分析和分类
+
+
+
+## app层引发的ANR
+
+
+
+## System 引发的ANR
+
+
+
+# 关于ANR问题分析的总结
+
+
+
+# ANR机制触发原理
 
