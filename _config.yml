@@ -14,7 +14,7 @@ baseurl: ""                             # for example, '/blog' if your blog host
 RSS: false
 weibo_username:
 zhihu_username:
-github_username:    Gaoming
+github_username:    GaomingA
 twitter_username:
 facebook_username:  
 linkedin_username:  firstname-lastname-idxxxx
@@ -91,6 +91,22 @@ friends: [
     {
         title: "chenson",
         href: "https://www.chendongqi.me"
+    },
+    {
+        title: "只为那传说中美丽的草原",
+        href: "http://qiangbo.space/"
+    },
+    {
+        title: "gityuan",
+        href: "http://gityuan.com/"
+    },
+    {
+        title: "尼古拉斯.赵四",
+        href: "http://www.wjdiankong.cn/"
+    },
+    {
+        title: "luoshengyang",
+        href: "http://blog.csdn.net/luoshengyang"
     },
 #{
 #        title: "乱序",
