@@ -5,7 +5,7 @@ header-img: img/website/home-bg.jpg
 email: gao_ming_1990@gmail.com
 description: "Gaoming的个人博客，记录自己感兴趣的事，探索Android技术"
 keyword: "Android系统 异常 性能 框架 Exception Performance Framework"
-url: "http://www.betterming.cn"              # your host, for absolute URL
+url: "http://www.betterming.work"              # your host, for absolute URL
 baseurl: ""                             # for example, '/blog' if your blog hosted on 'host/blog'
 
 
