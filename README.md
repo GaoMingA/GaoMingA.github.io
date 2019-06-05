@@ -1,6 +1,6 @@
 # Gaoming blog 模板
 
-### [我的博客在这里 &rarr;](www.betterming.cn)
+### [我的博客在这里 &rarr;](www.betterming.)
 
 ### 关于收到"Page Build Warning"的email
 
